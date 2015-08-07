@@ -1,0 +1,38 @@
+	// all points that are inside the rectangle
+	public Iterable<Point2D> range(RectHV rect){
+		Queue<Point2D> queue = new Queue<>();
+		if(rect == null) return queue; 
+		range(root, rect, queue, null, null, null, null);
+		return queue;
+	}	
+	
+	private void range(Node node, RectHV rect, Queue<Point2D> q, Double oldXMax, Double oldXMin, Double oldYMax, Double oldYMin){
+		
+		if(node == null) return;
+		
+		boolean intersects = true;
+		
+		if(oldXMin != null && rect.xmax() < oldXMin) intersects = false;
+		if(oldXMax != null && rect.xmin() > oldXMax) intersects = false;
+		if(oldYMin != null && rect.ymax() < oldYMin) intersects = false;
+		if(oldYMax != null && rect.ymin() > oldYMax) intersects = false;
+
+		Double newXMax = oldXMax;
+		Double newXMin = oldXMin;
+		Double newYMax = oldYMax;
+		Double newYMin = oldYMin;
+		
+		if(intersects) {
+			
+			if(node.horizontal){
+				newYMax = node.key.y();
+				newYMin = node.key.y();
+			} else {
+				newXMax = node.key.x();
+				newXMin = node.key.x();	
+			}
+			if(rect.contains(node.key)) q.enqueue(node.key);
+			range(node.left,rect,q,newXMax,oldXMin,newYMax,oldYMin);
+			range(node.right,rect,q,oldXMax,newXMin,oldYMax,newYMin);
+		} 
+	}
